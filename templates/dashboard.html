@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Phishing Simulation Platform{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h1 class="display-5 fw-bold text-cyber-primary">
+            <i data-feather="shield" class="me-3"></i>Security Training Dashboard
+        </h1>
+        <p class="lead text-muted">Monitor and manage your phishing simulation campaigns</p>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-gradient-primary border-0 text-white cyber-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title text-white-50">Total Campaigns</h6>
+                        <h2 class="mb-0">{{ total_campaigns }}</h2>
+                    </div>
+                    <div class="stats-icon">
+                        <i data-feather="target" class="large-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-gradient-success border-0 text-white cyber-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title text-white-50">Active Campaigns</h6>
+                        <h2 class="mb-0">{{ active_campaigns }}</h2>
+                    </div>
+                    <div class="stats-icon">
+                        <i data-feather="play-circle" class="large-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-gradient-warning border-0 text-white cyber-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title text-white-50">Total Users</h6>
+                        <h2 class="mb-0">{{ total_users }}</h2>
+                    </div>
+                    <div class="stats-icon">
+                        <i data-feather="users" class="large-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-gradient-info border-0 text-white cyber-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title text-white-50">Avg Success Rate</h6>
+                        <h2 class="mb-0">
+                            {% set total_rate = 0 %}
+                            {% for stat in campaign_stats %}
+                                {% set total_rate = total_rate + stat.success_rate %}
+                            {% endfor %}
+                            {{ "%.1f"|format(total_rate / campaign_stats|length if campaign_stats else 0) }}%
+                        </h2>
+                    </div>
+                    <div class="stats-icon">
+                        <i data-feather="trending-up" class="large-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row mb-4">
+    <div class="col-lg-8">
+        <div class="card cyber-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i data-feather="bar-chart-2" class="me-2"></i>Campaign Performance
+                </h5>
+                <span class="badge bg-cyber-primary">Live Data</span>
+            </div>
+            <div class="card-body">
+                <canvas id="campaignChart" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card cyber-card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i data-feather="pie-chart" class="me-2"></i>Success Rate Distribution
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="successChart" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Campaigns -->
+<div class="row">
+    <div class="col-12">
+        <div class="card cyber-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i data-feather="clock" class="me-2"></i>Recent Campaigns
+                </h5>
+                <a href="{{ url_for('create_campaign') }}" class="btn btn-cyber-primary btn-sm">
+                    <i data-feather="plus" class="me-1"></i>New Campaign
+                </a>
+            </div>
+            <div class="card-body">
+                {% if campaign_stats %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Campaign</th>
+                                <th>Status</th>
+                                <th>Targets</th>
+                                <th>Interactions</th>
+                                <th>Success Rate</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for stat in campaign_stats %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="campaign-icon me-3">
+                                            <i data-feather="mail" class="text-cyber-primary"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0">{{ stat.campaign.name }}</h6>
+                                            <small class="text-muted">{{ stat.campaign.description[:50] }}...</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if stat.campaign.status == 'active' %}
+                                        <span class="badge bg-success">Active</span>
+                                    {% elif stat.campaign.status == 'completed' %}
+                                        <span class="badge bg-primary">Completed</span>
+                                    {% elif stat.campaign.status == 'paused' %}
+                                        <span class="badge bg-warning">Paused</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Draft</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ stat.total_targets }}</td>
+                                <td>{{ stat.interactions }}</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="progress me-2" style="width: 60px; height: 8px;">
+                                            <div class="progress-bar 
+                                                {% if stat.success_rate > 30 %}bg-danger
+                                                {% elif stat.success_rate > 15 %}bg-warning
+                                                {% else %}bg-success
+                                                {% endif %}" 
+                                                style="width: {{ stat.success_rate }}%"></div>
+                                        </div>
+                                        <span class="small">{{ stat.success_rate }}%</span>
+                                    </div>
+                                </td>
+                                <td>{{ stat.campaign.created_at.strftime('%Y-%m-%d') }}</td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        {% if stat.campaign.status == 'draft' %}
+                                        <a href="{{ url_for('start_campaign', campaign_id=stat.campaign.id) }}" 
+                                           class="btn btn-outline-success btn-sm">
+                                            <i data-feather="play" class="small"></i>
+                                        </a>
+                                        {% endif %}
+                                        <a href="#" class="btn btn-outline-primary btn-sm">
+                                            <i data-feather="eye" class="small"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i data-feather="inbox" class="text-muted mb-3" style="width: 48px; height: 48px;"></i>
+                    <h5 class="text-muted">No campaigns yet</h5>
+                    <p class="text-muted">Create your first phishing simulation campaign to get started</p>
+                    <a href="{{ url_for('create_campaign') }}" class="btn btn-cyber-primary">
+                        <i data-feather="plus" class="me-2"></i>Create Campaign
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

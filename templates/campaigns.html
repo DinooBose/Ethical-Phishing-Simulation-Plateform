@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block title %}Campaigns - Phishing Simulation Platform{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="display-6 fw-bold text-cyber-primary">
+                    <i data-feather="target" class="me-3"></i>Campaign Management
+                </h1>
+                <p class="lead text-muted">Create and manage phishing simulation campaigns</p>
+            </div>
+            <div>
+                <a href="{{ url_for('test_email') }}" class="btn btn-outline-info me-2">
+                    <i data-feather="mail" class="me-2"></i>Test Email
+                </a>
+                <a href="{{ url_for('create_campaign') }}" class="btn btn-cyber-primary btn-lg">
+                    <i data-feather="plus" class="me-2"></i>New Campaign
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card cyber-card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i data-feather="list" class="me-2"></i>All Campaigns
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if campaigns %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Campaign</th>
+                                <th>Template</th>
+                                <th>Status</th>
+                                <th>Targets</th>
+                                <th>Sent</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for campaign in campaigns %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="campaign-icon me-3">
+                                            <i data-feather="mail" class="text-cyber-primary"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0">{{ campaign.name }}</h6>
+                                            <small class="text-muted">{{ campaign.description[:60] }}{% if campaign.description|length > 60 %}...{% endif %}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">{{ campaign.template.name if campaign.template else 'No Template' }}</span>
+                                </td>
+                                <td>
+                                    {% if campaign.status == 'active' %}
+                                        <span class="badge bg-success">
+                                            <i data-feather="play-circle" class="small me-1"></i>Active
+                                        </span>
+                                    {% elif campaign.status == 'completed' %}
+                                        <span class="badge bg-primary">
+                                            <i data-feather="check-circle" class="small me-1"></i>Completed
+                                        </span>
+                                    {% elif campaign.status == 'paused' %}
+                                        <span class="badge bg-warning">
+                                            <i data-feather="pause-circle" class="small me-1"></i>Paused
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">
+                                            <i data-feather="edit" class="small me-1"></i>Draft
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ campaign.total_targets }}</td>
+                                <td>{{ campaign.emails_sent }}</td>
+                                <td>{{ campaign.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        {% if campaign.status == 'draft' %}
+                                        <a href="{{ url_for('start_campaign', campaign_id=campaign.id) }}" 
+                                           class="btn btn-outline-success btn-sm"
+                                           onclick="return confirm('Are you sure you want to start this campaign?')">
+                                            <i data-feather="play" class="small"></i>
+                                        </a>
+                                        {% endif %}
+                                        <a href="{{ url_for('view_campaign', campaign_id=campaign.id) }}" 
+                                           class="btn btn-outline-primary btn-sm"
+                                           title="View Campaign Details">
+                                            <i data-feather="eye" class="small"></i>
+                                        </a>
+                                        <a href="{{ url_for('campaign_analytics', campaign_id=campaign.id) }}" 
+                                           class="btn btn-outline-info btn-sm"
+                                           title="View Analytics">
+                                            <i data-feather="bar-chart-2" class="small"></i>
+                                        </a>
+                                        <a href="{{ url_for('edit_campaign', campaign_id=campaign.id) }}" 
+                                           class="btn btn-outline-secondary btn-sm"
+                                           title="Edit Campaign">
+                                            <i data-feather="edit" class="small"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i data-feather="target" class="text-muted mb-3" style="width: 64px; height: 64px;"></i>
+                    <h4 class="text-muted">No campaigns created yet</h4>
+                    <p class="text-muted mb-4">Start by creating your first phishing simulation campaign</p>
+                    <a href="{{ url_for('create_campaign') }}" class="btn btn-cyber-primary btn-lg">
+                        <i data-feather="plus" class="me-2"></i>Create Your First Campaign
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

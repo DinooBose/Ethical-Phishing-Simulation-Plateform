@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Phishing Simulation Platform{% endblock %}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Feather Icons -->
+    <script src="https://unpkg.com/feather-icons"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom CSS -->
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-cyber-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="{{ url_for('dashboard') }}">
+                <i data-feather="shield" class="me-2 text-cyber-primary"></i>
+                <span class="fw-bold">PhishSim Pro</span>
+                <span class="badge bg-cyber-primary ms-2 small">EDUCATIONAL</span>
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('dashboard') }}">
+                            <i data-feather="home" class="small me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('campaigns') }}">
+                            <i data-feather="target" class="small me-1"></i>Campaigns
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('templates') }}">
+                            <i data-feather="mail" class="small me-1"></i>Templates
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('analytics') }}">
+                            <i data-feather="bar-chart-2" class="small me-1"></i>Analytics
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('users') }}">
+                            <i data-feather="users" class="small me-1"></i>Users
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('education') }}">
+                            <i data-feather="book-open" class="small me-1"></i>Education
+                        </a>
+                    </li>
+                </ul>
+                
+                <div class="d-flex align-items-center text-light">
+                    <i data-feather="user" class="small me-2"></i>
+                    <span class="small">Admin User</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Alert Banner -->
+    <div class="alert alert-warning alert-dismissible fade show m-0 border-0 rounded-0 alert-banner" role="alert" id="simulationAlert">
+        <div class="container-fluid d-flex align-items-center">
+            <i data-feather="alert-triangle" class="me-2"></i>
+            <strong>SIMULATION ENVIRONMENT:</strong> This is an educational cybersecurity training platform. All activities are simulated for learning purposes.
+            <button type="button" class="btn-close" data-bs-dismiss="alert" onclick="dismissSimulationAlert()"></button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-wrapper">
+        <div class="container-fluid py-4">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Initialize Feather Icons
+        feather.replace();
+        
+        // Simulation Alert Management
+        function dismissSimulationAlert() {
+            sessionStorage.setItem('simulationAlertDismissed', 'true');
+            adjustMainContentPadding();
+        }
+        
+        function adjustMainContentPadding() {
+            const mainWrapper = document.querySelector('.main-wrapper');
+            if (mainWrapper) {
+                mainWrapper.style.paddingTop = '76px'; // Only navbar height
+            }
+        }
+        
+        // Add active class to current nav item
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if simulation alert was previously dismissed
+            const alertDismissed = sessionStorage.getItem('simulationAlertDismissed');
+            const simulationAlert = document.getElementById('simulationAlert');
+            
+            if (alertDismissed === 'true' && simulationAlert) {
+                simulationAlert.style.display = 'none';
+                adjustMainContentPadding();
+            }
+            
+            // Add event listener for when alert is closed
+            const alertCloseBtn = document.querySelector('#simulationAlert .btn-close');
+            if (alertCloseBtn) {
+                alertCloseBtn.addEventListener('click', function() {
+                    setTimeout(adjustMainContentPadding, 300); // Wait for fade out animation
+                });
+            }
+            
+            const currentPath = window.location.pathname;
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === currentPath) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+    
+    {% block scripts %}{% endblock %}
+</body>
+</html>

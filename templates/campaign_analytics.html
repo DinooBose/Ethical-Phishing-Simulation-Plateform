@@ -1,0 +1,252 @@
+{% extends "base.html" %}
+
+{% block title %}Campaign Analytics - {{ campaign.name }}{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="display-6 fw-bold text-cyber-primary">
+                    <i data-feather="bar-chart-2" class="me-3"></i>Campaign Analytics
+                </h1>
+                <p class="lead text-muted">{{ campaign.name }} - Detailed Performance Analysis</p>
+            </div>
+            <div>
+                <a href="{{ url_for('view_campaign', campaign_id=campaign.id) }}" class="btn btn-outline-secondary">
+                    <i data-feather="arrow-left" class="me-2"></i>Back to Campaign
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Interaction Overview -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card cyber-card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i data-feather="pie-chart" class="me-2"></i>Interaction Breakdown
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for interaction in interactions_by_type %}
+                    <div class="col-md-4">
+                        <div class="text-center p-3">
+                            <div class="stats-icon mx-auto mb-3">
+                                {% if interaction.interaction_type == 'email_opened' %}
+                                    <i data-feather="mail" class="text-info large-icon"></i>
+                                {% elif interaction.interaction_type == 'link_clicked' %}
+                                    <i data-feather="mouse-pointer" class="text-warning large-icon"></i>
+                                {% elif interaction.interaction_type == 'form_submitted' %}
+                                    <i data-feather="alert-triangle" class="text-danger large-icon"></i>
+                                {% endif %}
+                            </div>
+                            <h3 class="mb-1">{{ interaction.count }}</h3>
+                            <h6 class="text-muted">{{ interaction.interaction_type.replace('_', ' ').title() }}</h6>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    
+                    {% if not interactions_by_type %}
+                    <div class="col-12">
+                        <div class="text-center py-5">
+                            <i data-feather="activity" class="text-muted mb-3" style="width: 64px; height: 64px;"></i>
+                            <h4 class="text-muted">No interactions yet</h4>
+                            <p class="text-muted mb-0">Data will appear here once users start interacting with the campaign</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Timeline Chart -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card cyber-card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i data-feather="trending-up" class="me-2"></i>Interaction Timeline
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if timeline_data %}
+                <canvas id="timelineChart" height="100"></canvas>
+                {% else %}
+                <div class="text-center py-5">
+                    <i data-feather="trending-up" class="text-muted mb-3" style="width: 64px; height: 64px;"></i>
+                    <h4 class="text-muted">No timeline data available</h4>
+                    <p class="text-muted mb-0">Timeline chart will show interaction patterns over time</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Detailed Statistics -->
+<div class="row">
+    <div class="col-md-6">
+        <div class="card cyber-card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i data-feather="target" class="me-2"></i>Campaign Summary
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-6">
+                        <div class="border rounded p-3 text-center">
+                            <i data-feather="users" class="text-primary mb-2"></i>
+                            <h4 class="mb-1">{{ campaign.total_targets }}</h4>
+                            <small class="text-muted">Total Targets</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="border rounded p-3 text-center">
+                            <i data-feather="send" class="text-success mb-2"></i>
+                            <h4 class="mb-1">{{ campaign.emails_sent }}</h4>
+                            <small class="text-muted">Emails Sent</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="border rounded p-3 text-center">
+                            <i data-feather="calendar" class="text-info mb-2"></i>
+                            <h6 class="mb-1">{{ campaign.created_at.strftime('%Y-%m-%d') }}</h6>
+                            <small class="text-muted">Created</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="border rounded p-3 text-center">
+                            <i data-feather="play-circle" class="text-warning mb-2"></i>
+                            <h6 class="mb-1">{{ campaign.started_at.strftime('%Y-%m-%d') if campaign.started_at else 'Not Started' }}</h6>
+                            <small class="text-muted">Started</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card cyber-card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i data-feather="mail" class="me-2"></i>Template Information
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if campaign.template %}
+                <div class="mb-3">
+                    <h6 class="text-muted mb-1">Template Name</h6>
+                    <p class="mb-0">{{ campaign.template.name }}</p>
+                </div>
+                <div class="mb-3">
+                    <h6 class="text-muted mb-1">Template Type</h6>
+                    <span class="badge bg-primary">{{ campaign.template.template_type }}</span>
+                </div>
+                <div class="mb-3">
+                    <h6 class="text-muted mb-1">Subject Line</h6>
+                    <p class="mb-0">{{ campaign.template.subject }}</p>
+                </div>
+                <div class="mb-3">
+                    <h6 class="text-muted mb-1">Sender</h6>
+                    <p class="mb-0">{{ campaign.template.sender_name }} &lt;{{ campaign.template.sender_email }}&gt;</p>
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i data-feather="mail" class="text-muted mb-3"></i>
+                    <h6 class="text-muted">No template assigned</h6>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if timeline_data %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Process timeline data
+    const timelineData = {{ timeline_data | tojson }};
+    
+    // Group data by date and interaction type
+    const dates = [...new Set(timelineData.map(item => item.date))].sort();
+    const interactionTypes = ['email_opened', 'link_clicked', 'form_submitted'];
+    
+    const datasets = [];
+    const colors = {
+        'email_opened': '#17a2b8',
+        'link_clicked': '#ffc107', 
+        'form_submitted': '#dc3545'
+    };
+    
+    interactionTypes.forEach(type => {
+        const data = dates.map(date => {
+            const item = timelineData.find(d => d.date === date && d.interaction_type === type);
+            return item ? item.count : 0;
+        });
+        
+        datasets.push({
+            label: type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()),
+            data: data,
+            backgroundColor: colors[type],
+            borderColor: colors[type],
+            borderWidth: 2,
+            fill: false
+        });
+    });
+    
+    // Create timeline chart
+    const ctx = document.getElementById('timelineChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: dates,
+            datasets: datasets
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            },
+            elements: {
+                point: {
+                    radius: 4,
+                    hoverRadius: 6
+                }
+            }
+        }
+    });
+    
+    // Initialize Feather Icons
+    feather.replace();
+});
+</script>
+{% endif %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Feather Icons if not already done
+    if (typeof feather !== 'undefined') {
+        feather.replace();
+    }
+});
+</script>
+{% endblock %}

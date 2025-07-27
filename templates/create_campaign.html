@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+
+{% block title %}Create Campaign - Phishing Simulation Platform{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('campaigns') }}">Campaigns</a></li>
+                <li class="breadcrumb-item active">Create New Campaign</li>
+            </ol>
+        </nav>
+        <h1 class="display-6 fw-bold text-cyber-primary">
+            <i data-feather="plus-circle" class="me-3"></i>Create New Campaign
+        </h1>
+        <p class="lead text-muted">Set up a new phishing simulation campaign for security training</p>
+    </div>
+</div>
+
+<form method="POST" class="needs-validation" novalidate>
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card cyber-card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i data-feather="settings" class="me-2"></i>Campaign Details
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Campaign Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                        <div class="invalid-feedback">
+                            Please provide a campaign name.
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="3" 
+                                  placeholder="Describe the purpose and goals of this campaign..."></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="template_id" class="form-label">Email Template <span class="text-danger">*</span></label>
+                        <select class="form-select" id="template_id" name="template_id" required>
+                            <option value="">Select a template...</option>
+                            {% for template in templates %}
+                            <option value="{{ template.id }}">{{ template.name }} ({{ template.template_type }})</option>
+                            {% endfor %}
+                        </select>
+                        <div class="invalid-feedback">
+                            Please select an email template.
+                        </div>
+                        {% if not templates %}
+                        <div class="alert alert-warning mt-2">
+                            <i data-feather="alert-triangle" class="me-2"></i>
+                            No templates available. <a href="{{ url_for('templates') }}">Create a template first</a>.
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card cyber-card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i data-feather="users" class="me-2"></i>Target Users
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="target_emails" class="form-label">Target Email Addresses <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="target_emails" name="target_emails" rows="6" 
+                                  placeholder="Enter email addresses, one per line..." required></textarea>
+                        <div class="form-text">
+                            <i data-feather="info" class="small me-1"></i>
+                            Enter one email address per line. Only registered users will receive emails.
+                        </div>
+                        <div class="invalid-feedback">
+                            Please provide at least one target email address.
+                        </div>
+                    </div>
+                    
+                    <button type="button" class="btn btn-outline-secondary" id="loadUsersBtn">
+                        <i data-feather="download" class="me-2"></i>Load All Users
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card cyber-card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i data-feather="info" class="me-2"></i>Campaign Preview
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="campaign-preview">
+                        <div class="mb-3">
+                            <label class="form-label small text-muted">Status</label>
+                            <div>
+                                <span class="badge bg-secondary">
+                                    <i data-feather="edit" class="small me-1"></i>Draft
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label small text-muted">Target Count</label>
+                            <div id="targetCount" class="fw-bold">0 users</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label small text-muted">Selected Template</label>
+                            <div id="selectedTemplate" class="text-muted">None selected</div>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="alert alert-info">
+                        <i data-feather="shield" class="me-2"></i>
+                        <strong>Safety Notice:</strong> All emails will be clearly marked as simulations for educational purposes.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card cyber-card mt-4">
+                <div class="card-body text-center">
+                    <button type="submit" class="btn btn-cyber-primary btn-lg w-100">
+                        <i data-feather="save" class="me-2"></i>Create Campaign
+                    </button>
+                    <div class="mt-2">
+                        <a href="{{ url_for('campaigns') }}" class="btn btn-link">Cancel</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Form validation
+(function() {
+    'use strict';
+    window.addEventListener('load', function() {
+        var forms = document.getElementsByClassName('needs-validation');
+        var validation = Array.prototype.filter.call(forms, function(form) {
+            form.addEventListener('submit', function(event) {
+                if (form.checkValidity() === false) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    }, false);
+})();
+
+// Load all users button
+document.getElementById('loadUsersBtn').addEventListener('click', function() {
+    const users = [
+        {% for user in users %}
+        "{{ user.email }}",
+        {% endfor %}
+    ];
+    
+    document.getElementById('target_emails').value = users.join('\n');
+    updateTargetCount();
+});
+
+// Update target count
+function updateTargetCount() {
+    const textarea = document.getElementById('target_emails');
+    const emails = textarea.value.split('\n').filter(email => email.trim() !== '');
+    document.getElementById('targetCount').textContent = emails.length + ' users';
+}
+
+// Update selected template
+document.getElementById('template_id').addEventListener('change', function() {
+    const select = this;
+    const selectedOption = select.options[select.selectedIndex];
+    const templateDiv = document.getElementById('selectedTemplate');
+    
+    if (select.value) {
+        templateDiv.textContent = selectedOption.textContent;
+        templateDiv.classList.remove('text-muted');
+    } else {
+        templateDiv.textContent = 'None selected';
+        templateDiv.classList.add('text-muted');
+    }
+});
+
+// Update target count on input
+document.getElementById('target_emails').addEventListener('input', updateTargetCount);
+</script>
+{% endblock %}

@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Campaign - {{ campaign.name }}{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="display-6 fw-bold text-cyber-primary">
+                    <i data-feather="edit" class="me-3"></i>Edit Campaign
+                </h1>
+                <p class="lead text-muted">Modify campaign settings and configuration</p>
+            </div>
+            <div>
+                <a href="{{ url_for('view_campaign', campaign_id=campaign.id) }}" class="btn btn-outline-secondary">
+                    <i data-feather="arrow-left" class="me-2"></i>Back to Campaign
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card cyber-card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i data-feather="settings" class="me-2"></i>Campaign Settings
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Campaign Name</label>
+                                <input type="text" class="form-control" id="name" name="name" 
+                                       value="{{ campaign.name }}" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="template_id" class="form-label">Email Template</label>
+                                <select class="form-select" id="template_id" name="template_id" required>
+                                    <option value="">Select a template</option>
+                                    {% for template in templates %}
+                                    <option value="{{ template.id }}" 
+                                            {% if template.id == campaign.template_id %}selected{% endif %}>
+                                        {{ template.name }} - {{ template.template_type }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" 
+                                  rows="3">{{ campaign.description }}</textarea>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <button type="submit" class="btn btn-cyber-primary btn-lg">
+                                <i data-feather="save" class="me-2"></i>Save Changes
+                            </button>
+                            <a href="{{ url_for('view_campaign', campaign_id=campaign.id) }}" 
+                               class="btn btn-outline-secondary btn-lg ms-2">
+                                Cancel
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card cyber-card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i data-feather="info" class="me-2"></i>Campaign Info
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h6 class="text-muted mb-1">Status</h6>
+                    {% if campaign.status == 'active' %}
+                        <span class="badge bg-success">Active</span>
+                    {% elif campaign.status == 'completed' %}
+                        <span class="badge bg-primary">Completed</span>
+                    {% elif campaign.status == 'paused' %}
+                        <span class="badge bg-warning">Paused</span>
+                    {% else %}
+                        <span class="badge bg-secondary">Draft</span>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-3">
+                    <h6 class="text-muted mb-1">Total Targets</h6>
+                    <p class="mb-0">{{ campaign.total_targets }} users</p>
+                </div>
+                
+                <div class="mb-3">
+                    <h6 class="text-muted mb-1">Emails Sent</h6>
+                    <p class="mb-0">{{ campaign.emails_sent }} emails</p>
+                </div>
+                
+                <div class="mb-3">
+                    <h6 class="text-muted mb-1">Created</h6>
+                    <p class="mb-0">{{ campaign.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                </div>
+                
+                {% if campaign.started_at %}
+                <div class="mb-3">
+                    <h6 class="text-muted mb-1">Started</h6>
+                    <p class="mb-0">{{ campaign.started_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card cyber-card border-warning">
+            <div class="card-header bg-warning bg-opacity-10">
+                <h5 class="mb-0 text-warning">
+                    <i data-feather="alert-triangle" class="me-2"></i>Important Notes
+                </h5>
+            </div>
+            <div class="card-body">
+                <ul class="mb-0">
+                    <li class="mb-2">Changes to active campaigns may affect ongoing simulations</li>
+                    <li class="mb-2">Template changes won't affect already sent emails</li>
+                    <li class="mb-0">Target users cannot be modified after campaign creation</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Feather Icons
+    feather.replace();
+});
+</script>
+{% endblock %}

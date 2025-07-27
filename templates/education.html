@@ -1,0 +1,285 @@
+{% extends "base.html" %}
+
+{% block title %}Security Education - Phishing Simulation Platform{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h1 class="display-6 fw-bold text-cyber-primary">
+            <i data-feather="book-open" class="me-3"></i>Security Education Center
+        </h1>
+        <p class="lead text-muted">Learn best practices and improve your cybersecurity awareness</p>
+        
+        {% if request.args.get('simulated') %}
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <i data-feather="alert-triangle" class="me-2"></i>
+            <strong>Simulation Complete!</strong> You just fell for a phishing simulation. Learn from this experience below.
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Key Security Tips -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card cyber-card bg-gradient-primary text-white">
+            <div class="card-body">
+                <h4 class="card-title">
+                    <i data-feather="shield" class="me-2"></i>Essential Phishing Protection Tips
+                </h4>
+                <div class="row mt-4">
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <i data-feather="eye" class="mb-2" style="width: 32px; height: 32px;"></i>
+                            <h6>Verify Sender</h6>
+                            <p class="small mb-0">Always check the sender's email address and domain</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <i data-feather="link" class="mb-2" style="width: 32px; height: 32px;"></i>
+                            <h6>Hover Links</h6>
+                            <p class="small mb-0">Hover over links to see the actual destination URL</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <i data-feather="clock" class="mb-2" style="width: 32px; height: 32px;"></i>
+                            <h6>Take Time</h6>
+                            <p class="small mb-0">Don't rush - phishers create urgency to make you act fast</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <i data-feather="phone" class="mb-2" style="width: 32px; height: 32px;"></i>
+                            <h6>Verify Separately</h6>
+                            <p class="small mb-0">Call or contact through official channels to verify</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Educational Content -->
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card cyber-card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i data-feather="alert-circle" class="me-2"></i>How to Identify Phishing Emails
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="accordion" id="phishingAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#suspicious-sender">
+                                <i data-feather="mail" class="me-2"></i>Suspicious Sender Information
+                            </button>
+                        </h2>
+                        <div id="suspicious-sender" class="accordion-collapse collapse show" data-bs-parent="#phishingAccordion">
+                            <div class="accordion-body">
+                                <ul class="list-unstyled">
+                                    <li class="mb-2"><i data-feather="x-circle" class="text-danger me-2 small"></i>Generic greetings like "Dear Customer"</li>
+                                    <li class="mb-2"><i data-feather="x-circle" class="text-danger me-2 small"></i>Misspelled company names or domains</li>
+                                    <li class="mb-2"><i data-feather="x-circle" class="text-danger me-2 small"></i>Unusual sender addresses from known companies</li>
+                                    <li class="mb-2"><i data-feather="x-circle" class="text-danger me-2 small"></i>Display name doesn't match the email address</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#urgent-language">
+                                <i data-feather="zap" class="me-2"></i>Urgent or Threatening Language
+                            </button>
+                        </h2>
+                        <div id="urgent-language" class="accordion-collapse collapse" data-bs-parent="#phishingAccordion">
+                            <div class="accordion-body">
+                                <ul class="list-unstyled">
+                                    <li class="mb-2"><i data-feather="x-circle" class="text-danger me-2 small"></i>"Your account will be closed immediately"</li>
+                                    <li class="mb-2"><i data-feather="x-circle" class="text-danger me-2 small"></i>"Urgent action required"</li>
+                                    <li class="mb-2"><i data-feather="x-circle" class="text-danger me-2 small"></i>"Verify your account within 24 hours"</li>
+                                    <li class="mb-2"><i data-feather="x-circle" class="text-danger me-2 small"></i>"Click here now to avoid suspension"</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#suspicious-links">
+                                <i data-feather="link-2" class="me-2"></i>Suspicious Links and Attachments
+                            </button>
+                        </h2>
+                        <div id="suspicious-links" class="accordion-collapse collapse" data-bs-parent="#phishingAccordion">
+                            <div class="accordion-body">
+                                <ul class="list-unstyled">
+                                    <li class="mb-2"><i data-feather="x-circle" class="text-danger me-2 small"></i>Shortened URLs (bit.ly, tinyurl, etc.)</li>
+                                    <li class="mb-2"><i data-feather="x-circle" class="text-danger me-2 small"></i>Links that don't match the claimed destination</li>
+                                    <li class="mb-2"><i data-feather="x-circle" class="text-danger me-2 small"></i>Unexpected attachments, especially .exe files</li>
+                                    <li class="mb-2"><i data-feather="x-circle" class="text-danger me-2 small"></i>URLs with suspicious domains or subdomains</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card cyber-card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i data-feather="check-circle" class="me-2"></i>What to Do If You Suspect Phishing
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-success">
+                            <i data-feather="thumbs-up" class="me-2"></i>DO
+                        </h6>
+                        <ul class="list-unstyled">
+                            <li class="mb-2"><i data-feather="check" class="text-success me-2 small"></i>Report suspicious emails to IT</li>
+                            <li class="mb-2"><i data-feather="check" class="text-success me-2 small"></i>Delete the email immediately</li>
+                            <li class="mb-2"><i data-feather="check" class="text-success me-2 small"></i>Verify through official channels</li>
+                            <li class="mb-2"><i data-feather="check" class="text-success me-2 small"></i>Use multi-factor authentication</li>
+                            <li class="mb-2"><i data-feather="check" class="text-success me-2 small"></i>Keep software updated</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-danger">
+                            <i data-feather="thumbs-down" class="me-2"></i>DON'T
+                        </h6>
+                        <ul class="list-unstyled">
+                            <li class="mb-2"><i data-feather="x" class="text-danger me-2 small"></i>Click on suspicious links</li>
+                            <li class="mb-2"><i data-feather="x" class="text-danger me-2 small"></i>Download unexpected attachments</li>
+                            <li class="mb-2"><i data-feather="x" class="text-danger me-2 small"></i>Enter credentials on suspicious sites</li>
+                            <li class="mb-2"><i data-feather="x" class="text-danger me-2 small"></i>Forward phishing emails</li>
+                            <li class="mb-2"><i data-feather="x" class="text-danger me-2 small"></i>Ignore security warnings</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card cyber-card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i data-feather="trending-up" class="me-2"></i>Security Awareness Score
+                </h5>
+            </div>
+            <div class="card-body text-center">
+                <div class="position-relative d-inline-block">
+                    <canvas id="scoreChart" width="120" height="120"></canvas>
+                    <div class="position-absolute top-50 start-50 translate-middle">
+                        <h2 class="mb-0 text-cyber-primary">85</h2>
+                        <small class="text-muted">Score</small>
+                    </div>
+                </div>
+                <p class="mt-3 mb-0">Your security awareness is <strong>Good</strong>. Keep learning to improve!</p>
+                <div class="mt-3">
+                    <div class="progress">
+                        <div class="progress-bar bg-cyber-primary" style="width: 85%"></div>
+                    </div>
+                    <small class="text-muted">85% Complete</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card cyber-card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i data-feather="award" class="me-2"></i>Recent Achievements
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="badge bg-success me-3 p-2">
+                        <i data-feather="shield"></i>
+                    </div>
+                    <div>
+                        <h6 class="mb-0">Phishing Detector</h6>
+                        <small class="text-muted">Reported 5 phishing attempts</small>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center mb-3">
+                    <div class="badge bg-primary me-3 p-2">
+                        <i data-feather="book"></i>
+                    </div>
+                    <div>
+                        <h6 class="mb-0">Security Scholar</h6>
+                        <small class="text-muted">Completed all training modules</small>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center">
+                    <div class="badge bg-warning me-3 p-2">
+                        <i data-feather="clock"></i>
+                    </div>
+                    <div>
+                        <h6 class="mb-0">Quick Learner</h6>
+                        <small class="text-muted">Fast response to simulations</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card cyber-card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i data-feather="bookmark" class="me-2"></i>Quick Reference
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group list-group-flush">
+                    <a href="#" class="list-group-item list-group-item-action border-0 px-0">
+                        <i data-feather="file-text" class="me-2 small"></i>Security Policy
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action border-0 px-0">
+                        <i data-feather="phone" class="me-2 small"></i>IT Help Desk
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action border-0 px-0">
+                        <i data-feather="alert-triangle" class="me-2 small"></i>Report Incident
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action border-0 px-0">
+                        <i data-feather="download" class="me-2 small"></i>Security Tools
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Create circular progress chart for security score
+const ctx = document.getElementById('scoreChart').getContext('2d');
+new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+        datasets: [{
+            data: [85, 15],
+            backgroundColor: ['#007bff', '#e9ecef'],
+            borderWidth: 0
+        }]
+    },
+    options: {
+        responsive: false,
+        maintainAspectRatio: false,
+        cutout: '80%',
+        plugins: {
+            legend: {
+                display: false
+            }
+        }
+    }
+});
+</script>
+{% endblock %}

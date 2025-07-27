@@ -1,0 +1,290 @@
+{% extends "base.html" %}
+
+{% block title %}Campaign Details - {{ campaign.name }}{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="display-6 fw-bold text-cyber-primary">
+                    <i data-feather="target" class="me-3"></i>{{ campaign.name }}
+                </h1>
+                <p class="lead text-muted">{{ campaign.description }}</p>
+            </div>
+            <div>
+                <a href="{{ url_for('campaigns') }}" class="btn btn-outline-secondary me-2">
+                    <i data-feather="arrow-left" class="me-2"></i>Back to Campaigns
+                </a>
+                <a href="{{ url_for('edit_campaign', campaign_id=campaign.id) }}" class="btn btn-cyber-primary">
+                    <i data-feather="edit" class="me-2"></i>Edit Campaign
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Campaign Status -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card cyber-card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="d-flex align-items-center">
+                            <div class="stats-icon me-3">
+                                {% if campaign.status == 'active' %}
+                                    <i data-feather="play-circle" class="text-success large-icon"></i>
+                                {% elif campaign.status == 'completed' %}
+                                    <i data-feather="check-circle" class="text-primary large-icon"></i>
+                                {% elif campaign.status == 'paused' %}
+                                    <i data-feather="pause-circle" class="text-warning large-icon"></i>
+                                {% else %}
+                                    <i data-feather="edit" class="text-secondary large-icon"></i>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <h6 class="text-muted mb-1">Status</h6>
+                                <h4 class="mb-0">
+                                    {% if campaign.status == 'active' %}
+                                        <span class="badge bg-success">Active</span>
+                                    {% elif campaign.status == 'completed' %}
+                                        <span class="badge bg-primary">Completed</span>
+                                    {% elif campaign.status == 'paused' %}
+                                        <span class="badge bg-warning">Paused</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Draft</span>
+                                    {% endif %}
+                                </h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <h6 class="text-muted mb-1">Template</h6>
+                        <h5 class="mb-0">{{ campaign.template.name if campaign.template else 'No Template' }}</h5>
+                    </div>
+                    <div class="col-md-3">
+                        <h6 class="text-muted mb-1">Created</h6>
+                        <h5 class="mb-0">{{ campaign.created_at.strftime('%Y-%m-%d') }}</h5>
+                    </div>
+                    <div class="col-md-3">
+                        <h6 class="text-muted mb-1">Started</h6>
+                        <h5 class="mb-0">{{ campaign.started_at.strftime('%Y-%m-%d') if campaign.started_at else 'Not Started' }}</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Campaign Statistics -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card cyber-card text-white bg-gradient-primary">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title mb-1">Total Targets</h6>
+                        <h2 class="mb-0">{{ total_targets }}</h2>
+                    </div>
+                    <div class="stats-icon">
+                        <i data-feather="users" class="large-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card cyber-card text-white bg-gradient-info">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title mb-1">Email Opens</h6>
+                        <h2 class="mb-0">{{ email_opens }}</h2>
+                        <small>{{ open_rate }}% rate</small>
+                    </div>
+                    <div class="stats-icon">
+                        <i data-feather="mail" class="large-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card cyber-card text-white bg-gradient-warning">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title mb-1">Link Clicks</h6>
+                        <h2 class="mb-0">{{ link_clicks }}</h2>
+                        <small>{{ click_rate }}% rate</small>
+                    </div>
+                    <div class="stats-icon">
+                        <i data-feather="mouse-pointer" class="large-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card cyber-card text-white bg-gradient-danger">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title mb-1">Form Submissions</h6>
+                        <h2 class="mb-0">{{ form_submissions }}</h2>
+                        <small>{{ success_rate }}% rate</small>
+                    </div>
+                    <div class="stats-icon">
+                        <i data-feather="alert-triangle" class="large-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activity -->
+<div class="row">
+    <div class="col-md-8">
+        <div class="card cyber-card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i data-feather="activity" class="me-2"></i>Recent Activity
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if recent_interactions %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Action</th>
+                                <th>Time</th>
+                                <th>IP Address</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for interaction in recent_interactions %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-sm bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2">
+                                            {{ interaction.user.first_name[0] if interaction.user.first_name else 'U' }}
+                                        </div>
+                                        <div>
+                                            <div class="fw-semibold">{{ interaction.user.first_name }} {{ interaction.user.last_name }}</div>
+                                            <small class="text-muted">{{ interaction.user.email }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if interaction.interaction_type == 'email_opened' %}
+                                        <span class="badge bg-info">
+                                            <i data-feather="mail" class="small me-1"></i>Email Opened
+                                        </span>
+                                    {% elif interaction.interaction_type == 'link_clicked' %}
+                                        <span class="badge bg-warning">
+                                            <i data-feather="mouse-pointer" class="small me-1"></i>Link Clicked
+                                        </span>
+                                    {% elif interaction.interaction_type == 'form_submitted' %}
+                                        <span class="badge bg-danger">
+                                            <i data-feather="alert-triangle" class="small me-1"></i>Form Submitted
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ interaction.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
+                                <td><code>{{ interaction.ip_address }}</code></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i data-feather="activity" class="text-muted mb-3" style="width: 48px; height: 48px;"></i>
+                    <h6 class="text-muted">No activity yet</h6>
+                    <p class="text-muted mb-0">User interactions will appear here once the campaign is active</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card cyber-card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i data-feather="pie-chart" class="me-2"></i>Success Rate
+                </h5>
+            </div>
+            <div class="card-body text-center">
+                <div class="position-relative d-inline-block">
+                    <canvas id="successChart" width="120" height="120"></canvas>
+                    <div class="position-absolute top-50 start-50 translate-middle">
+                        <h2 class="mb-0 text-cyber-primary">{{ success_rate }}%</h2>
+                        <small class="text-muted">Success</small>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <div class="progress">
+                        <div class="progress-bar bg-cyber-primary" style="width: {{ success_rate }}%"></div>
+                    </div>
+                    <small class="text-muted">{{ form_submissions }} of {{ total_targets }} users fell for the simulation</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card cyber-card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i data-feather="settings" class="me-2"></i>Quick Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('campaign_analytics', campaign_id=campaign.id) }}" class="btn btn-outline-primary">
+                        <i data-feather="bar-chart-2" class="me-2"></i>View Analytics
+                    </a>
+                    <a href="{{ url_for('edit_campaign', campaign_id=campaign.id) }}" class="btn btn-outline-secondary">
+                        <i data-feather="edit" class="me-2"></i>Edit Campaign
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Success Rate Chart
+    const ctx = document.getElementById('successChart').getContext('2d');
+    const successRate = {{ success_rate }};
+    
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            datasets: [{
+                data: [successRate, 100 - successRate],
+                backgroundColor: ['#e74c3c', '#ecf0f1'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: false,
+            maintainAspectRatio: false,
+            cutout: '75%',
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+    });
+    
+    // Initialize Feather Icons
+    feather.replace();
+});
+</script>
+{% endblock %}
